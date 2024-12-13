@@ -1,0 +1,282 @@
+<div class="container">
+    <a class="link-button" 
+       (click)="showAddFormFunction()">
+      Add New</a>
+    <h2>Activities</h2>
+
+
+    <!-- Section for displaying activities -->
+    <div></div>
+    <div *ngIf="activities.length > 0; 
+    else noActivities" class="table-container">
+      <table class="activity-table">
+        <thead>
+          <tr>
+            <th>Activity Name</th>
+            <th>Duration</th>
+            <th>Calories Burned</th>
+            <th>Steps</th>
+            <th>Distance Covered</th>
+            <th>Date</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let activity of displayedActivities">
+            <td>{{ activity.activityTitle }}</td>
+            <td>{{ activity.duration }}</td>
+            <td>{{ activity.burnedCalories }}</td>
+            <td>{{ activity.steps }}</td>
+            <td>{{ activity.distance }}</td>
+            <td>{{ activity.date.toString().slice(0, 10) }}</td>
+            <td>
+              <button class="link-button" 
+              (click)="getActivityById(activity?._id ?? '')">
+                Get Activity
+              </button>
+              <button class="link-button" 
+              (click)="populateForm(activity)">Update</button>
+              <button
+                class="btn delete-btn"
+                (click)="confirmDelete(activity?._id ?? '')"
+              >
+                Delete
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  
+    <!-- Template if activities is empty -->
+    <ng-template #noActivities>
+      <div class="no-activities-container">
+        <p>No activities available</p>
+      </div>
+    </ng-template>
+  
+    <!-- Section for Update activity form -->
+    <div *ngIf="showUpdateForm" 
+    class="update-form-container">
+      <button class="close-button" 
+      (click)="cancelUpdate()">X</button>
+      <h2>Update Activity</h2>
+      <form class="update-form" 
+      (ngSubmit)="updateActivity()">
+        <div>
+          <label for="updateActivityName">
+              Activity Name:</label>
+          <input
+            type="text"
+            id="updateActivityName"
+            name="updateActivityName"
+            [(ngModel)]="updatedActivity.activityTitle"
+            required
+          />
+        </div>
+        <div>
+          <label for="updateDuration">
+              Duration (minutes):</label>
+          <input
+            type="number"
+            id="updateDuration"
+            name="updateDuration"
+            [(ngModel)]="updatedActivity.duration"
+            required
+          />
+        </div>
+        <div>
+          <label for="updateCaloriesBurned">
+              Calories Burned:</label>
+          <input
+            type="number"
+            id="updateCaloriesBurned"
+            name="updateCaloriesBurned"
+            [(ngModel)]="updatedActivity.burnedCalories"
+            required
+          />
+        </div>
+        <div>
+          <label for="updateSteps">Steps:</label>
+          <input
+            type="number"
+            id="updateSteps"
+            name="updateSteps"
+            [(ngModel)]="updatedActivity.steps"
+            required
+          />
+        </div>
+        <div>
+          <label for="updateDistance">Distance:</label>
+          <input
+            type="number"
+            id="updateDistance"
+            name="updateDistance"
+            [(ngModel)]="updatedActivity.distance"
+            required
+          />
+        </div>
+        <div>
+          <button class="link-button" type="submit" 
+          >Update</button>
+          <button class="btn" type="button"
+          (click)="cancelUpdate()">Cancel</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Section for viewing activity -->
+    <div
+      *ngIf="!showUpdateForm && activityById._id"
+      class="view-activity-container"
+    >
+      <button class="close-button" 
+      (click)="closeView()">X</button>
+      <h2>View Activity</h2>
+      <form class="view-activity-form">
+        <div>
+          <label for="activityName">Activity Name:</label>
+          <input
+            type="text"
+            id="activityName"
+            name="activityName"
+            [(ngModel)]="activityById.activityTitle"
+            readonly
+          />
+        </div>
+        <div>
+          <label for="duration">Duration (minutes):</label>
+          <input
+            type="number"
+            id="duration"
+            name="duration"
+            [(ngModel)]="activityById.duration"
+            readonly
+          />
+        </div>
+        <div>
+          <label for="caloriesBurned">Calories Burned:</label>
+          <input
+            type="number"
+            id="caloriesBurned"
+            name="caloriesBurned"
+            [(ngModel)]="activityById.burnedCalories"
+            readonly
+          />
+        </div>
+        <div>
+          <label for="steps">Steps:</label>
+          <input
+            type="number"
+            id="steps"
+            name="steps"
+            [(ngModel)]="activityById.steps"
+            readonly
+          />
+        </div>
+        <div>
+          <label for="distance">Distance:</label>
+          <input
+            type="number"
+            id="distance"
+            name="distance"
+            [(ngModel)]="activityById.distance"
+            readonly
+          />
+        </div>
+        <div>
+          <label for="date">Date:</label>
+          <input
+            type="text"
+            id="date"
+            name="date"
+            [(ngModel)]="getActivityByIdDate"
+            readonly
+          />
+        </div>
+        <div>
+          <a href="/activities" 
+          class="link-button">View All Activities</a>
+        </div>
+      </form>
+    </div>
+  
+    <!-- Section for Adding activity -->
+    <div
+      class="update-form-container"
+      *ngIf="showAddForm && !showUpdateForm && !activityById._id"
+    >
+      <button class="close-button" 
+      (click)="closeAddForm()">X</button>
+      <h2>Add Activity</h2>
+      <form class="update-form" 
+      (ngSubmit)="addActivity()">
+        <div>
+          <label for="activityName">Activity Name:</label>
+          <input
+            type="text"
+            id="activityName"
+            name="activityName"
+            [(ngModel)]="activity.activityTitle"
+            required
+          />
+        </div>
+        <div>
+          <label for="duration">Duration (minutes):</label>
+          <input
+            type="number"
+            id="duration"
+            name="duration"
+            [(ngModel)]="activity.duration"
+            required
+          />
+        </div>
+        <div>
+          <label for="caloriesBurned">Calories Burned:</label>
+          <input
+            type="number"
+            id="caloriesBurned"
+            name="caloriesBurned"
+            [(ngModel)]="activity.burnedCalories"
+            required
+          />
+        </div>
+        <div>
+          <label for="steps">Steps:</label>
+          <input
+            type="number"
+            id="steps"
+            name="steps"
+            [(ngModel)]="activity.steps"
+            required
+          />
+        </div>
+        <div>
+          <label for="distance">Distance:</label>
+          <input
+            type="number"
+            id="distance"
+            name="distance"
+            [(ngModel)]="activity.distance"
+            required
+          />
+        </div>
+        <div>
+          <label for="date">Date:</label>
+          <input
+            type="date"
+            id="date"
+            name="date"
+            [(ngModel)]="activity.date"
+            required
+          />
+        </div>
+        <div>
+          <button type="submit" 
+          >Add Activity</button>
+          <button type="button" class="btn" 
+          (click)="resetForm()">Clear</button>
+        </div>
+      </form>
+    </div>
+  </div>
